@@ -1,0 +1,407 @@
+<html>
+
+<head>
+ <title>VRLC001h = Co-Python + AFrame + PyAFrame001 + Google Sign-In</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="styling-for-vrlc.css" />
+
+  <!--Google API Support, used here for OAuth2 sign-in/out. -->
+  <meta name="google-signin-client_id" content="289078718021-i597ogu5anolllu3mt0u0d2h7a6fcdjp.apps.googleusercontent.com">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js"
+        onload="this.onload=function(){};handleClientLoad()"
+        onreadystatechange="if (this.readyState === 'complete') this.onload()"
+>
+  </script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
+
+  <!-- CodeMirror -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/mode/python/python.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/codemirror.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.17.0/theme/colorforth.min.css" />
+
+  <!-- Firepad -->
+  <link rel="stylesheet" href="https://firepad.io/releases/v1.5.9/firepad.css" />
+  <script src="https://firepad.io/releases/v1.5.9/firepad.min.js"></script>
+
+  <!-- AFrame -->
+  <script src="./naf/aframe.min.js"></script>
+  
+
+  <!-- Include example userlist script / CSS.
+       Can be downloaded from: https://github.com/firebase/firepad/tree/master/examples/ -->
+  <script src="firepad-userlist.js"></script>
+  <link rel="stylesheet" href="firepad-userlist.css" />
+
+  <!-- Free Teleporting in VR -->
+  <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
+
+  <!-- Pyodide -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.19.0/full/pyodide.js"></script>
+
+  <!-- sample VRLC python code -->
+  <script>
+    var retrieve_file = async function ( filename) {
+      const response = await  fetch(filename);
+      return response.text();
+      }
+  </script>
+
+  <!-- Networked A-Frame -->
+  <script src="./naf/networked-aframe.js"></script>
+  <script src="./naf/socket.io.slim.js"></script>
+  <script src="./naf/spawn-in-circle.component.js"></script>
+  <script>
+    // see issue https://github.com/networked-aframe/networked-aframe/issues/267
+    NAF.schemas.getComponentsOriginal = NAF.schemas.getComponents;
+    NAF.schemas.getComponents = (template) => {
+      if (!NAF.schemas.hasTemplate("#avatar-template")) {
+        NAF.schemas.add({
+          template: '#avatar-template',
+           components: [
+            'position',
+            'rotation',
+            {
+              selector: '.head',
+              component: 'material',
+              property: 'color'
+            }
+          ]
+        });
+      }
+      const components = NAF.schemas.getComponentsOriginal(template);
+      return components;
+    }
+  </script>
+  <script src="https://unpkg.com/aframe-randomizer-components@^3.0.1/dist/aframe-randomizer-components.min.js"></script>
+ 
+ 
+  <!-- Py_AFrame (special python-importable module for VRLC functionality).
+     Note: it uses the retrieve_file function defined above, so needs to be
+     loaded after that, like here.  -->
+  <script src="py_aframe_003.js"></script>
+  <script src="naf/easyrtc.js"></script>
+
+  <!-- To avoid an error message in the console about favicon.ico not available, we add: -->
+  <link rel="icon" href="data:,">
+
+</head>
+
+<body id="the_body" onload="init_all()">
+<h1><img src="img/VRLC-alpha-logo.png" width="40 height="40" >
+VRLC-Alpha</h1>
+<h2>
+Collaborative Python Programming for VR with Firepad, CodeMirror, Pyodide, and AFrame (v.001h)</h2>
+
+<div id="top_text">
+<!-- Google sign-in stuff: -->
+<button id="sign-in-or-out-button"
+        style="margin-left: 25px">Sign In/Authorize</button>
+<button id="revoke-access-button"
+        style="display: none; margin-left: 25px">Revoke access</button>
+
+<div id="auth-status" style="display: inline; padding-left: 25px"></div><hr>
+
+<button id="run_button" onClick="eval_buffer()">Run (and reset VR)</button>
+
+&nbsp; &nbsp; &nbsp; Shared Python Code Buffer:
+  </div>
+
+<div id="editor">
+  <div id="userlist"></div>
+  <div id="firepad"></div>
+  <div id="outputdiv">
+    <textarea id="outputtextarea" rows="6" 
+       style="overflow:scroll" disabled></textarea>
+     </div>
+</div>
+
+<script>
+var firepad;
+var codeMirror;
+var lib_vrlc;
+
+function init_all() {
+  retrieve_file("lib_vrlc_002.py").then(function(txt) { lib_vrlc = txt; });
+  init_firepad();
+  init_pyodide();
+}
+
+function init_firepad() {
+
+  //// Initialize Firebase.
+  var config = {
+   apiKey: 'AIzaSyD4yZNiSI7E2bbAzfhcNw1Nt2Byso0iQ5g',
+   authDomain: "https://vrlc-d6a6b.firebaseapp.com",
+   databaseURL: "https://vrlc-d6a6b-default-rtdb.firebaseio.com/",
+   projectId: "vrlc-d6a6b",
+   storageBucket: "vrlc-d6a6b.appspot.com",
+   messagingSenderId: "289078718021",
+   appId: "1:289078718021:web:d891fdedac82f46c583d2c",
+   measurementId: "G-6LHFYV8ETX"
+  };
+  firebase.initializeApp(config);
+
+  //// Get Firebase Database reference.
+  var firepadRef = getExampleRef();
+
+  //// Create CodeMirror (with lineWrapping on).
+  codeMirror = CodeMirror(document.getElementById('firepad'),
+   { lineWrapping: true,
+     lineNumbers: true,
+     mode: 'python',
+     theme: 'colorforth',
+     matchBrackets: true,
+     tabSize: 4,
+     extraKeys: {"Ctrl-Space": "autocomplete"}
+
+   });
+
+  // Create a random ID to use as our user ID (we must give this to firepad and FirepadUserList).
+  var userId = Math.floor(Math.random() * 9999999999).toString();
+
+  //// Create Firepad (with rich text features and our desired userId).
+  firepad = Firepad.fromCodeMirror(firepadRef, codeMirror,
+     { richTextToolbar: false, richTextShortcuts: false, userId: userId});
+
+  //// Create FirepadUserList (with our desired userId).
+  var firepadUserList = FirepadUserList.fromDiv(firepadRef.child('users'),
+     document.getElementById('userlist'), userId);
+
+  //// Initialize contents.
+  firepad.on('ready', function() 
+   {
+     if (firepad.isHistoryEmpty()) { 
+       retrieve_file("initial_sample_vrlc_code_003.py").then((txt) => firepad.setText(txt));
+     } ;
+   }
+   );
+};  //// End of init_firepad().
+
+
+// Helper to get hash from end of URL or generate a random one.
+function getExampleRef() {
+  var ref = firebase.database().ref();
+  var hash = window.location.hash.replace(/#/g, '');
+  if (hash) {
+    ref = ref.child(hash);
+  } else {
+    ref = ref.push(); // generate unique location.
+    window.location = window.location + '#' + ref.key; // add it as a hash to the URL.
+  }
+  if (typeof console !== 'undefined') {
+    console.log('Firebase data: ', ref.toString());
+  }
+  return ref;
+}
+
+// Set up Pyodide, the Web-assembly based Python interpreter:
+async function main(){
+  let outputzone = document.getElementById("outputtextarea");
+  let pyodide = await loadPyodide({
+    indexURL : "https://cdn.jsdelivr.net/pyodide/v0.19.0/full/",
+    stdout: (text) => {addToOutput("",text);},
+    stderr: (text) => {addToOutput("",text);} 
+    });
+  window.pyodide = pyodide; // Make sure the file py_aframe.js can access pyodide, too.
+  return pyodide;
+}
+let pyodideReadyPromise = main();
+
+// Manage the output text area, where Python results will be shown:
+var output;
+output = document.getElementById("outputtextarea");
+
+function checkTextareaHeight(){
+   var textarea = document.getElementById("outputtextarea");
+   if(textarea.selectionStart == textarea.selectionEnd) {
+      textarea.scrollTop = textarea.scrollHeight;
+   }
+}
+function addToOutput(code, s) {
+  if (s == undefined) { output.value += "None\n"; return; }
+  if (code == "") {
+    output.value += s + "\n";
+  }
+  else {
+    if (code[-1]=="\n" || code[-1]==' ') {
+      output.value += ">>> " + code + s + "\n";
+    }
+    else {
+      output.value += ">>> " + code + "\n" + s + "\n";
+    }
+  }
+  checkTextareaHeight();
+}
+
+output.value = "Initializing...\n";
+
+// Create the context for the Python session, including
+// name space, and our special module for creating VR 
+// content using AFrame.
+var namespace;
+var pyodide;
+async function init_pyodide() {
+  pyodide = await pyodideReadyPromise;
+  pyodide.registerJsModule("py_aframe", py_aframe);
+  namespace = pyodide.globals.get("dict")();
+  pyodide.runPython(lib_vrlc, namespace); // Execute  lib_vrlc.py code in advance of any other Python code.
+  }
+
+async function eval_buffer() {
+  // First reset VR by removing any content already added:
+  let vrdiv = document.getElementById("vrstuff");
+  vrdiv.innerHTML = '';
+  try {
+    let code = codeMirror.getValue();
+    let output_value = pyodide.runPython(code, namespace);
+    addToOutput(code, output_value);
+  } catch (err) {
+    addToOutput("Error:", err);
+  }
+}
+
+</script>
+
+<div id="repl_input_div">
+>>> <input type="text" id="repl_input" size="100%"></input>
+ </div>
+<script>
+var input = document.getElementById("repl_input");
+input.addEventListener("keyup", function(event) {
+  if (event.keyCode === 13) {
+    event.preventDefault();
+    let code = input.value;
+    try {
+      let output_value = pyodide.runPython(code, namespace);
+      addToOutput(code, output_value);
+    } catch (err) {
+      addToOutput("Error:", err);
+    }
+  }
+});
+</script>
+
+<div id="vrstuff">
+</div>
+
+<script>
+// Code for accessing the Google authorization service.
+// This code comes from an online example, for the most part.
+  var GoogleAuth;
+  var SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly';
+  function handleClientLoad() {
+    // Load the API's client and auth2 modules.
+    // Call the initClient function after the modules load.
+    gapi.load('client:auth2', initClient);
+  }
+
+  function initClient() {
+    // In practice, your app can retrieve one or more discovery documents.
+    var discoveryUrl = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+
+    // Initialize the gapi.client object, which app uses to make API requests.
+    // Get API key and client ID from API Console.
+    // 'scope' field specifies space-delimited list of access scopes.
+    gapi.client.init({
+        'apiKey': 'YOUR_API_KEY',
+        'clientId': 'YOUR_CLIENT_ID',
+//        'discoveryDocs': [discoveryUrl],
+        'scope': SCOPE
+    }).then(function () {
+      GoogleAuth = gapi.auth2.getAuthInstance();
+
+      // Listen for sign-in state changes.
+      GoogleAuth.isSignedIn.listen(updateSigninStatus);
+
+      // Handle initial sign-in state. (Determine if user is already signed in.)
+      var user = GoogleAuth.currentUser.get();
+      setSigninStatus();
+
+      // Call handleAuthClick function when user clicks on
+      //      "Sign In/Authorize" button.
+      $('#sign-in-or-out-button').click(function() {
+        handleAuthClick();
+      });
+      $('#revoke-access-button').click(function() {
+        revokeAccess();
+      });
+    });
+  }
+
+  function handleAuthClick() {
+    if (GoogleAuth.isSignedIn.get()) {
+      // User is authorized and has clicked "Sign out" button.
+      GoogleAuth.signOut();
+    } else {
+      // User is not signed in. Start Google auth flow.
+      GoogleAuth.signIn();
+    }
+  }
+
+  function revokeAccess() {
+    GoogleAuth.disconnect();
+  }
+
+  function setSigninStatus() {
+    var user = GoogleAuth.currentUser.get();
+    var isAuthorized = user.hasGrantedScopes(SCOPE);
+    if (isAuthorized) {
+      $('#sign-in-or-out-button').html('Sign out');
+      $('#revoke-access-button').css('display', 'inline-block');
+      $('#auth-status').html('You are currently signed in and have granted ' +
+          'access to this app.');
+    } else {
+      $('#sign-in-or-out-button').html('Sign In/Authorize');
+      $('#revoke-access-button').css('display', 'none');
+      $('#auth-status').html('You have not authorized this app or you are ' +
+          'signed out.');
+    }
+  }
+
+  function updateSigninStatus() {
+    setSigninStatus();
+  }
+</script>
+
+<script>
+// This is just to help with debugging:
+//window.addEventListener("message", ({ data }) => {
+//  console.log("General event listener received this: ");
+//  console.log(data) })
+</script>
+
+<div id="bottom_text">
+<p>This version, VRLC001h, adds a REPL, and it offers a simple example with a maze in
+VR (the maze is defined in the file initial_sample_vrlc_code_003.py. (Jan. 24, 2022).
+The version is like VRLC001g, (which is like vrlc001f), but with loading
+of libraries from external files. (Jan. 17, 2022).
+Version vrlc001f, was like vrlc001e,
+but we added support
+for free teleportation in VR, so the created scene can be more easily
+explored, without having to physically walk around a room while wearing 
+the headset.
+
+The version vrlc001e was like  VRLC001d.html but redundant scripts were
+eliminated and the file was somewhat more cleaned up. (Jan. 13, 2022).
+<br>
+
+Version VRLC001d, added the use of Google's OAuth2 facilities for
+ sign-in. (ST, Jan 13, 2022). [Note that although the signing in and out works,
+it has no effect (yet) on access to the functionality of the app.]
+
+<br>
+The earlier version,
+VRLC001b, added support for having a separate file py_aframe.js
+that defines a Python-callable API (as a module named py_aframe) to make
+some AFrame functionality directly accessible from Python code in the browser.
+--ST (Jan. 14, 2022).
+</div>
+
+
+</body>
+</html>

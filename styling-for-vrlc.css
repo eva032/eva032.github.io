@@ -1,0 +1,66 @@
+/* styling-for-vrlc.css */
+
+html { height: 100%;
+  overflow-y: scroll; }
+body { margin: 0; height: 100%;
+  overflow-y: scroll; }
+h1 { font-size: 42pt; text-indent: 6pt; }
+
+#top_text {
+  width: 100%;
+  top: 150px;
+}
+#editor {
+  height: 80%;
+  width: 100%;
+/*  background-color: darkgray; */
+}
+#userlist {
+  float: left;
+  height: 80%;
+  z-index: 10000; /* Keeps userlist visible even after a-scene is added to the page. */
+  width: 150px;
+}
+#firepad {
+  float: left;
+  overflow: hidden;
+  width: calc(100% - 150px);
+  height: 70% - 15px; /* percent of editor div height */
+/*
+  background-color: lightblue; /* But this color seems to be overwritten by the code mirror area. */
+*/
+}
+#outputdiv {
+  z-index: 10000;
+  width: 100%;
+  height: 20%;
+  float: left;
+  background-color: aqua;
+}
+#outputtextarea {
+  width: 100%;
+}
+#repl_input_div {
+  z-index: 10000;
+  width: 100%;
+  float: left;
+  background-color: lightgreen;
+}
+#vrstuff {
+  width: 100%;
+  height: 20%;
+  float: left;
+}
+
+#bottom_text {
+  bottom: 5px;}
+
+/* Make the "VR" button (for entering VR) visible in this inferface. */
+
+.a-enter-vr { top: 20px;
+  bottom: auto; }
+.a-enter-vr-button { 
+  top: 0;
+  bottom: auto; 
+}
+
