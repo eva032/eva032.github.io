@@ -6,6 +6,9 @@
 
 // First, some code to support teleporting.  I guess this could go in the
 // main file instead, but why not here.
+
+var py_aframe = {}
+
     AFRAME.registerComponent("input-listen", {
         init: function () {
             //X-button Pressed
@@ -82,7 +85,7 @@ function jsPrintMousePos(event) {
 
   //document.addEventListener("click", printMousePos);
 
-var py_aframe = {
+/*var py_aframe = {
 
 
  // This is a function to remove the AFrame content from the DOM.
@@ -205,3 +208,4 @@ var py_aframe = {
    jsPlayNote(entity.getAttribute("note"))
  }
 }
+*/
