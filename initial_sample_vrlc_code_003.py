@@ -188,7 +188,7 @@ def shapes():
 
 #vrlc.setAttrib(sphere, "color", "green")
 #vrlc.setColor(sphere, "green")
-
+'''
 # Set up an event handler for the right hand Oculus controller A button:
 def handleRightA(event):
   sphere2=vrlc.entity({
@@ -228,3 +228,4 @@ def handleLeftY(event):
 
 # Create the Javascript proxy for the handler and add it as an event listener.
 handleLeftYProxy = makeHandler('ybuttondown', 'left-hand', handleLeftY)
+'''
