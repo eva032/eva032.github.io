@@ -1,0 +1,81 @@
+<a-scene id="the_scene" embedded vr-mode-ui 
+  networked-scene=" 
+  debug: true; 
+  audio: true; 
+  room: vrlc-room-1;
+  adapter: easyrtc; 
+  ">
+  <a-assets>
+
+    <!-- Templates -->
+
+    <!-- Avatar -->
+    <template id="avatar-template">
+      <a-entity class="avatar" networked-audio-source>
+        <a-sphere class="head"
+         scale="0.45 0.5 0.4"
+        ></a-sphere>
+        <a-entity class="face"
+          position="0 0.05 0"
+          >
+          <a-sphere class="eye"
+            color="#efefef"
+            position="0.16 0.1 -0.35"
+            scale="0.12 0.12 0.12"
+            >
+            <a-sphere class="pupil"
+              color="#000"
+              position="0 0 -1"
+              scale="0.2 0.2 0.2"
+              ></a-sphere>
+           </a-sphere>
+          <a-sphere class="eye"
+            color="#efefef"
+            position="-0.16 0.1 -0.35"
+            scale="0.12 0.12 0.12"
+            >
+            <a-sphere class="pupil"
+              color="#000"
+              position="0 0 -1"
+              scale="0.2 0.2 0.2"
+            ></a-sphere>
+          </a-sphere>
+        </a-entity>
+      </a-entity>
+    </template>
+
+    <!-- /Templates -->
+    </a-assets>
+
+    <a-entity id="player"
+      networked="template:#avatar-template;attachTemplateToLocal:false;"
+      camera
+      position="0 1.6 0"
+      spawn-in-circle="radius:3"
+      wasd-controls look-controls
+      >
+      <a-sphere class="head"
+        visible="false"
+        random-color
+      ></a-sphere>
+    </a-entity>
+
+    <a-entity id="left-hand" oculus-touch-controls="hand: left" teleport-controls></a-entity>
+    <a-entity id="right-hand" oculus-touch-controls="hand: right" teleport-controls></a-entity>
+    <a-entity id="cameraRig">
+      <a-entity id="head" camera wasd-controls look-controls position="0 1.6 0"></a-entity>
+      <a-entity id="ctlL"
+        teleport-controls="cameraRig: #cameraRig;
+        teleportOrigin: #head; startEvents: teleportstart; endEvents: teleportend"
+        raycaster="objects: .collidable; far:1.2;" laser-controls="hand: left" input-listen>
+        <a-text value="X: Teleport" position="0 0.05 0" rotation="-90 0 0"
+          scale="0.1 0.1 0.1" align="center" color="#FFFFFF"></a-text>
+      </a-entity>
+      <a-entity id="ctlR" raycaster="objects: .collidable; far:1.2;"
+        laser-controls="hand: right" input-listen>
+        <a-text value="This is your hand!"
+          position="0 0.05 0" rotation="-90 0 0" scale="0.1 0.1 0.1"
+          align="center" color="#FFFFFF"></a-text>
+        </a-entity>
+      </a-entity>
+  </a-scene>
