@@ -78,12 +78,13 @@ function stopNote(oscillator)
       	oscillator.stop(0);
   	}, 2000);
   }
-function jsPrintMousePos(event) {
-    console.log("clientX: " + event.clientX + " - clientY: " + event.clientY);
-  }
+
+//function jsPrintMousePos(event) {
+  //  console.log("clientX: " + event.clientX + " - clientY: " + event.clientY);
+  //}
 
   //document.addEventListener("click", printMousePos);
-
+  
 var py_aframe = {
 
 
