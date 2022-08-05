@@ -1,0 +1,23 @@
+status.txt
+
+As of Feb. 2, 2022, the version of aframe here is 1.2.0.
+
+SLT
+
+As of June 29, 2022, in addition to aframe, networked aframe,
+and socketio, I have installed copies of
+aframe.min.js.map
+ and
+socket.io.slim.js.map
+
+because I was getting error messages in the Chrome saying it could
+not find these files (error 404), so apparently it needed them.
+That error is gone now.
+
+I am (still?) getting lots of the following error message whenever
+running my VR demo:
+
+GET https://lamprocles.cs.washington.edu/socket.io/?EIO=3&transport=polling&t=O6nH89K 404 (Not Found)
+
+So perhaps I am supposed to have socket.io  being served at its own top level folder(?).
+Maybe I can do some symlinking here.
