@@ -7,8 +7,6 @@
 // First, some code to support teleporting.  I guess this could go in the
 // main file instead, but why not here.
 
-var py_aframe = {}
-
     AFRAME.registerComponent("input-listen", {
         init: function () {
             //X-button Pressed
@@ -23,6 +21,8 @@ var py_aframe = {}
         }
     });
 var vrdiv = document.getElementById("vrstuff");
+
+var py_aframe = {}
 
 // Get our default AFrame scene definition HTML for use in setting and
 // re-setting the VR content of the user's app.
