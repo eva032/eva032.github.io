@@ -22,7 +22,6 @@
     });
 var vrdiv = document.getElementById("vrstuff");
 
-var py_aframe = {}
 
 // Get our default AFrame scene definition HTML for use in setting and
 // re-setting the VR content of the user's app.
@@ -85,7 +84,7 @@ function jsPrintMousePos(event) {
 
   //document.addEventListener("click", printMousePos);
 
-/*var py_aframe = {
+var py_aframe = {
 
 
  // This is a function to remove the AFrame content from the DOM.
@@ -208,4 +207,3 @@ function jsPrintMousePos(event) {
    jsPlayNote(entity.getAttribute("note"))
  }
 }
-*/
