@@ -5,9 +5,12 @@
   room: vrlc-room-1;
   adapter: easyrtc; 
   ">
-  <a-assets>
+  <a-assets id="a_assets">
+	  <audio id="blip1" crossorigin="anonymous" preload="auto" src="https://assets.mixkit.co/sfx/download/mixkit-arcade-game-jump-coin-216.wav"></audio>
+	  <audio id="blip2" crossorigin="anonymous" src="https://assets.mixkit.co/sfx/download/mixkit-positive-interface-beep-221.wav"></audio>
+	  <audio id="shot" crossorigin="anonymous" preload="auto" src="https://assets.mixkit.co/sfx/download/mixkit-quick-win-video-game-notification-269.wav"></audio>
 
-    <!-- Templates -->
+	  <!-- Templates -->
 
     <!-- Avatar -->
     <template id="avatar-template">
