@@ -5,8 +5,10 @@
   room: vrlc-room-1;
   adapter: easyrtc; 
   ">
-  <a-assets id="a_assets">
-	
+  <a-assets>
+
+    <!-- Templates -->
+
     <!-- Avatar -->
     <template id="avatar-template">
       <a-entity class="avatar" networked-audio-source>
