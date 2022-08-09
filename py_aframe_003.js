@@ -50,8 +50,8 @@ function stopNote(oscillator) {
 
 var vrdiv = document.getElementById("vrstuff");
 
-// Get our default AFrame scene definition HTML for use in setting and
-// re-setting the VR content of the user's app.
+
+
 var standard_starting_a_frame_scene;
 retrieve_file("starter-a-scenes/multiplayer.afr").then(function (txt) {
     standard_starting_a_frame_scene = txt;
@@ -64,7 +64,7 @@ var py_aframe = {
     },
 
     // Here is one specialized entity constructor that makes creating cubes easy.
-    a_entity: function (TagName, ParentTagId, id, AttrObj) {
+    a_entity: function (TagName, ParentTagId, id, AttrObj, Evt_Click, Evt_MouseEnter) {
         let BaseTag = document.getElementById(ParentTagId);
         let node = document.createElement(TagName);
         node.setAttribute('id', id);
@@ -79,9 +79,30 @@ var py_aframe = {
                 node.setAttribute(arrAttr[0], String(arrAttr[1]));
             }
         }
+        Evt_Click = String(Evt_Click);
+        Evt_MouseEnter = String(Evt_MouseEnter);
+
+        if (Evt_Click != '') {
+            node.addEventListener("click", function () {
+                eval(Evt_Click);
+            });
+        }
+        if (Evt_MouseEnter != '') {
+            node.addEventListener("mouseenter", function () {
+                eval(Evt_MouseEnter);
+            });
+        }
+
         return node;
     },
-    PlayNote: function (MusicNote) {
-        jsPlayNote(MusicNote);
-    },
+    CreateEntity: function (mixInObj, OuterObj, InnerObj, jsEvt_Click, jsEvt_MouseEnter) {
+        let BaseID = String(parseInt(Math.random() * 1000000000)), MixInID = '', OuterEntiryID = '';
+        if (mixInObj != null) {
+            MixInID = 'm_' + BaseID;
+            this.a_entity("a-mixin", "a_assets", MixInID, mixInObj);
+        }
+        OuterEntiryID = 'eo_' + BaseID;
+        this.a_entity("a-entity", "the_scene", OuterEntiryID, OuterObj);
+        this.a_entity("a-entity", OuterEntiryID, 'ei_' + BaseID, "mixin~" + MixInID + "," + InnerObj, jsEvt_Click, jsEvt_MouseEnter);
+    }
 }
