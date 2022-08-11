@@ -69,3 +69,12 @@ vrlc.CreateEntity("geometry~primitive:box,material~color:pink",
 					"class~intersectable",
 					"jsPlayNote('B')",
 					"jsPlayNote('B')")
+
+def handleRightA(event):
+  print("handleRightA was called with this event:", event)
+  box2 = vrlc.box()
+  vrlc.setColor(box2, random.choice(["green", "red", "magenta", "black", "gray"]))
+  vrlc.setPosition(box2, 6, 0, -7)
+
+# Create the Javascript proxy for the handler and add it as an event listener.
+handleRightAProxy = makeHandler('abuttondown', 'right-hand', handleRightA)
