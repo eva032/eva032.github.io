@@ -1,6 +1,8 @@
 import py_aframe as vrlc
-vrlc.clear() # Create empty a-scene.
+import random
 
+vrlc.clear() # Create empty a-scene.
+vrlc.box()
 
 vrlc.a_entity("a-entity", "the_scene","mouseCursor","cursor~rayOrigin:mouse,raycaster~objects:.intersectable")
 vrlc.a_entity("a-entity", "the_scene","e1","position~0 .6 4")
@@ -69,7 +71,6 @@ vrlc.CreateEntity("geometry~primitive:box,material~color:pink",
 					"class~intersectable",
 					"jsPlayNote('B')",
 					"jsPlayNote('B')")
-
 def handleRightA(event):
   print("handleRightA was called with this event:", event)
   box2 = vrlc.box()
