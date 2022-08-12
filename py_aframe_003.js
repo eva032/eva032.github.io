@@ -1,17 +1,9 @@
-AFRAME.registerComponent("input-listen", {
-    init: function () {
-        //X-button Pressed
-        this.el.addEventListener("xbuttondown", function (e) {
-            this.emit("teleportstart");
-        });
+// Here is a library of Python-callable Javascript functions for creating and
+// modifying AFrame (and also Three.js) representations of VR geometry.
+//
+//
 
-        //X-button Released
-        this.el.addEventListener("xbuttonup", function (e) {
-            this.emit("teleportend");
-        });
-    }
-});
-
+//function that plays the inputted note
 function jsPlayNote(note) {
     context = new AudioContext;
     oscillator = context.createOscillator();
@@ -55,6 +47,7 @@ function jsPlayNote(note) {
     oscillator.start(0);
     stopNote(oscillator)
 }
+//stops the note after .75 seconds
 function stopNote(oscillator) {
     setTimeout(function () {
         oscillator.stop(0);
@@ -64,34 +57,22 @@ function stopNote(oscillator) {
 var vrdiv = document.getElementById("vrstuff");
 
 
-
+// Get our default AFrame scene definition HTML for use in setting and
+// re-setting the VR content of the user's app.
 var standard_starting_a_frame_scene;
 retrieve_file("starter-a-scenes/multiplayer.afr").then(function (txt) {
     standard_starting_a_frame_scene = txt;
 });
 
 var py_aframe = {
+  // This is a function to remove the AFrame content from the DOM.
+  // It's somewhat redundant with the "Run (and reset VR)" functionality, but
+  // could be useful in a future Python REPL that we might add to the app.
+  // It does initialize an empty scene (with teleport controls),
+  // which the Run button does not do.
     clear: function () {
         vrdiv = document.getElementById("vrstuff");
         vrdiv.innerHTML = standard_starting_a_frame_scene;
-    },
-    // Here's a function to create almost any kind of entity that AFrame permits.
-    // The argument, in the Python code, should be a dict giving property-value pairs.
-    // The format for these pairs corresponds to the AFrame entity documentation examples.
-    // Most of the values will be strings, even for multi-value properties such as position.
-    entity: function( propertyObjectProxy ) {
-     //console.log("Calling vrlc.entity");
-     //console.log(propertyObjectProxy);
-     propertyObject = propertyObjectProxy.toJs({dict_converter: Object.fromEntries});
-     //console.log(propertyObject);
-     let scene = document.getElementById("the_scene");
-     let node = document.createElement("a-entity");
-     for (const [prop, value] of Object.entries(propertyObject)) {
-       //console.log("prop="+prop+", value="+value); // Helps debug the AFrame property specifications.
-       node.setAttribute(prop, value);
-     }
-     scene.appendChild(node);
-     return node;
     },
 
     // Here is one specialized entity constructor that makes creating cubes easy.
@@ -135,41 +116,5 @@ var py_aframe = {
         OuterEntiryID = 'eo_' + BaseID;
         this.a_entity("a-entity", "the_scene", OuterEntiryID, OuterObj);
         this.a_entity("a-entity", OuterEntiryID, 'ei_' + BaseID, "mixin~" + MixInID + "," + InnerObj, jsEvt_Click, jsEvt_MouseEnter);
-    },
-    // Here is one specialized entity constructor that makes creating cubes easy.
-    box: function () {
-     let scene = document.getElementById("the_scene");
-     let node = document.createElement("a-box");
-     node.setAttribute("color", "purple");
-     node.object3D.position.set(-0.5, 0.5, -2); // Position updating is supposed to
-       // be handled differently than color, accoding to the AFrame docs.  Here we
-       // directly set the Three.js object's property.
-     scene.appendChild(node);
-     return node;
-    },
-    // General function for updating an entity property.
-    setAttrib: function( entity, property, attribute ) {
-     // Should work for most properties. (Not recommended for position or rotation, though)
-     entity.setAttribute(property, value);
-    },
-    // Specific function for updating the position of an entity.
-    // Note that it directly updates the Three.js representation of the entity,
-    // bypassing AFrame (as recommended in the AFrame docs).
-    setPosition: function (entity, x, y, z) {
-     entity.object3D.position.set(x, y, z);
-    },
-    // Similar updater for rotation.
-    setRotation: function (entity, a1, a2, a3) {
-     entity.object3D.rotation.set(a1, a2, a3);
-    },
-    // Similar updater for scale.
-    setScale: function (entity, sx, sy, sz) {
-     entity.object3D.scale.set(sx, sy, sz);
-    },
-    // A convenience function for updating color.
-    setColor: function (entity, color) {
-     entity.setAttribute("color",color);
-    },
-
-
+    }
 }
