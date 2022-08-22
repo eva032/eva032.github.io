@@ -10,37 +10,37 @@ function jsPlayNote(note) {
     if (note == "C") {
         oscillator.frequency.value = 261.63;
     }
-    elif (note == "C#") {
+    if (note == "C#") {
         oscillator.frequency.value = 277.18;
     }
-    elif (note == "D") {
+    if (note == "D") {
         oscillator.frequency.value = 293.66;
     }
-    elif (note == "D#") {
+    if (note == "D#") {
         oscillator.frequency.value = 311.13;
     }
-    elif (note == "E") {
+    if (note == "E") {
         oscillator.frequency.value = 329.63;
     }
-    elif (note == "F") {
+    if (note == "F") {
         oscillator.frequency.value = 349.23;
     }
-    elif (note == "F#") {
+    if (note == "F#") {
         oscillator.frequency.value = 369.99;
     }
-    elif (note == "G") {
+    if (note == "G") {
         oscillator.frequency.value = 392;
     }
-    elif (note == "G#") {
+    if (note == "G#") {
         oscillator.frequency.value = 415.30;
     }
-    elif (note == "A") {
+    if (note == "A") {
         oscillator.frequency.value = 440;
     }
-    elif (note == "A#") {
+    if (note == "A#") {
         oscillator.frequency.value = 466.16;
     }
-    elif (note == "B") {
+    if (note == "B") {
         oscillator.frequency.value = 493.88;
     }
     oscillator.connect(context.destination);
