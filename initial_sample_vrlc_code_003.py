@@ -1,6 +1,6 @@
 import py_aframe as vrlc
 vrlc.clear() # Create empty a-scene.
-#works
+
 #setting up the scene
 vrlc.a_entity("a-entity", "the_scene","mouseCursor","cursor~rayOrigin:mouse,raycaster~objects:.intersectable")
 vrlc.a_entity("a-entity", "the_scene","e1","position~0 .6 4")
